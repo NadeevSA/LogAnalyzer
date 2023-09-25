@@ -1,22 +1,24 @@
-﻿using LibGit2Sharp;
+﻿using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
+using static System.Net.Mime.MediaTypeNames;
+using Text = DocumentFormat.OpenXml.Wordprocessing.Text;
 
 namespace AnalysisCore
 {
     public class Program
     {
-        static void CompareTrees(Repository repo)
+        static string CompareTrees(Repository repo)
         {
             using (repo)
             {
-                foreach (var branch in repo.Branches) 
-                {
-                    Console.WriteLine(branch);
-                }
                 var commitTree = repo.Branches["refs/remotes/origin/test"].Tip.Tree; // Main Tree
+                var resultString = new StringBuilder();
                 foreach (var parent in repo.Head.Tip.Parents)
                 {
                     var parentCommitTree = repo.Branches["refs/remotes/origin/master"].Tip.Tree;
@@ -24,14 +26,17 @@ namespace AnalysisCore
 
                     foreach (var ptc in patch)
                     {
-                        Console.WriteLine(ptc.Status + " -> " + ptc.Path); // Status -> File Path
+                        resultString.Append(ptc.Status + " -> " + ptc.Path + '\n');
                     }
                 }
+
+                return resultString.ToString();
             }
         }
 
         public static void Main()
         {
+            //GIT
             var exampleRepositoryUrl = "https://github.com/NadeevSA/cicd.git";
             var exampleDestinationFolder = "src" + Guid.NewGuid();
             var exampleBranchName = "test";
@@ -47,26 +52,37 @@ namespace AnalysisCore
                                                         {
                                                             BranchName = exampleBranchName
                                                         });
+            var changes = CompareTrees(new Repository(repositoryClonedPath));
+            
+            ///WORD
+            string templatePath = @"D:\Git\Forest\Templates\report.docx";
+            string resultPath = @"D:\Git\Forest\Templates\report_result.docx";
 
-/*            var x = new Repository(repositoryClonedPath);
-            foreach (var branch in branches)
+            using (WordprocessingDocument document = WordprocessingDocument.CreateFromTemplate(templatePath))
             {
-                Console.WriteLine(branch);
-                var commits = x.Commits;
-                List<string> shaCommits = new List<string>();
-                string nextSha = commits.First().Sha;
-                foreach (var commit in commits)
+                var body = document.MainDocumentPart.Document.Body;
+                var paragraphs = body.Elements<Paragraph>();
+                foreach (Paragraph paragraph in paragraphs)
                 {
-                    if (nextSha == commit.Sha)
+                    foreach (Run run in paragraph.Elements<Run>())
                     {
-                        shaCommits.Add(commit.Sha);
-                        nextSha = commit.Parents.First().Sha;
+                        foreach (Text text in run.Elements<Text>())
+                        {
+                            if (text.Text == "name_branch")
+                            {
+                                Console.WriteLine(text.Text);
+                                text.Text = exampleBranchName;
+                            }
+                            if (text.Text == "change_in_branch")
+                            {
+                                Console.WriteLine(text.Text);
+                                text.Text = changes;
+                            }
+                        }
                     }
                 }
-
-            }*/
-
-            CompareTrees(new Repository(repositoryClonedPath));
+                document.Clone(resultPath);
+            }
         }
     }
 }
