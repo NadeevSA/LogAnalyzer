@@ -3,13 +3,13 @@ import {  Table  } from 'antd';
 
 const columns = [
   {
-    title: 'Репозиторий',
+    title: 'Репозито1sрий',
     dataIndex: 'FileName',
   },
 ];
 
 // rowSelection objects indicates the need for row selection
-const App = (props) => {
+export const TableResult = (props) => {
   const [checkStrictly, setCeckStrictly] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [json, setJson] = useState([]);
@@ -45,6 +45,3 @@ const App = (props) => {
     </>
   );
 };
-const ComponentDemo = App;
-
-export default ComponentDemo;
