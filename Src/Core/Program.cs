@@ -1,4 +1,4 @@
-﻿using AnalysisCore.Contracts;
+﻿using Core.Contracts;
 using DocumentFormat.OpenXml.Drawing.Diagrams;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -12,7 +12,7 @@ using System.Text;
 using static System.Net.Mime.MediaTypeNames;
 using Text = DocumentFormat.OpenXml.Wordprocessing.Text;
 
-namespace AnalysisCore
+namespace Core
 {
     public class Program
     {

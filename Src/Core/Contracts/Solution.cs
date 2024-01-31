@@ -1,7 +1,6 @@
-﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace AnalysisCore.Contracts
+namespace Core.Contracts
 {
     public class Solution
     {

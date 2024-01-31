@@ -3,28 +3,41 @@ import {  Table  } from 'antd';
 
 const columns = [
   {
-    title: 'Репозито1sрий',
-    dataIndex: 'FileName',
+    title: 'Путь файла',
+    dataIndex: 'FilePath',
   },
+  {
+    title: 'Номер строки',
+    dataIndex: 'LineNumber',
+  },
+  {
+    title: 'Код',
+    dataIndex: 'Result',
+  },
+  {
+    title: 'Результат',
+    dataIndex: 'ResultText',
+  }
 ];
 
-// rowSelection objects indicates the need for row selection
 export const TableResult = (props) => {
   const [checkStrictly, setCeckStrictly] = useState(false);
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [json, setJson] = useState([]);
   
   useEffect(() => {
-    setSelectedRowKeys(json.map(i => i.key))
+    //setSelectedRowKeys(json.map(i => i.key))
   }, [json])
 
   useEffect(() => {
-    setJson(props?.data? JSON.parse(props.data) : [])
+    if (props.data)
+    {
+      setJson(props?.data? JSON.parse(props.data) : [])
+    } 
   }, [props?.data])
 
   const rowSelection = {
     onChange: (_, selectedRows) => {
-      props.f(selectedRows)
+      //props.f(selectedRows)
     }
   };
 
@@ -33,12 +46,12 @@ export const TableResult = (props) => {
       <Table
         pagination={false}
         columns={columns}
-        size='middle'
+        size='small'
         //expandable={{ defaultExpandAllRows: true }}
         rowSelection={{
           ...rowSelection,
           checkStrictly,
-          defaultSelectedRowKeys: selectedRowKeys,
+          //defaultSelectedRowKeys: selectedRowKeys,
         }}
         dataSource={json}
       />

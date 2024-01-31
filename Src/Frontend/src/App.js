@@ -16,6 +16,8 @@ import { Switch } from '@consta/uikit/Switch';
 import { TabsExample } from './Tabs.js'
 import { Informer } from '@consta/uikit/Informer';
 import { TableResult } from './TableResult.js'
+import { IconArrowNext } from '@consta/icons/IconArrowNext';
+import { IconArrowPrevious } from '@consta/icons/IconArrowPrevious';
 
 function App() {
   const [result, setResult] = useState();
@@ -26,11 +28,13 @@ function App() {
   const [repository, setRepository] = useState()
   const [checkFiles, setCheckFiles] = useState([])
   const [repo, setRepo] = useState('https://github.com/NadeevSA/TestForDiplom.git')
-  const [nameSln, setNameSln] = useState('OOP')
+  const [nameSln, setNameSln] = useState('OOP.sln')
   const [checkIfElse, setCheckIfElse] = useState(true)
   const [tab, setTab] = useState('Настройки')
+  const [cardResult, setCardResult] = useState(true)
 
   function fetchCalculation() {
+    setTab('Результаты')
     setBtnLoad(true)
     return fetch('http://localhost:5027/api/Core/Calculation', {
       method: 'POST',
@@ -41,6 +45,7 @@ function App() {
                             checkFiles: checkFiles, 
                             nameBranch: value.value, 
                             path: repository.path,
+                            nameFolder: repository.nameFolder,
                             ifElseChecker: checkIfElse,
                           }),
     })
@@ -80,6 +85,7 @@ function App() {
   }
 
   function fetchPostRepository() {
+    setBtnLoad(true)
     return fetch('http://localhost:5027/api/Core/Repository/', {
       method: 'POST',
       headers: {
@@ -93,8 +99,12 @@ function App() {
     })
     .then(data => {
         setRepository(data)
+        setBtnLoad(false)
     })
-    .catch(error => console.warn(error));
+    .catch(error => {
+        console.warn(error)
+        setBtnLoad(false)
+      });
   }
 
   const data = [
@@ -117,13 +127,14 @@ function App() {
       <Header
         leftSide={
           <>
+          <Button disabled={tab != "Результаты"} view="secondary" label="" iconRight={cardResult ? IconArrowNext : IconArrowPrevious} onClick={() => setCardResult(!cardResult)}/>
           <HeaderModule indent="m">
             <Button disabled={!(repository && value && nameSln && logger)} style={{margin: '0 25px 0 0'}} view="secondary" label="Старт анализа" onClick={() => 
               {
                 fetchCalculation()
               }} loading={btnLoad}/>
           </HeaderModule>
-          <TabsExample x={x}></TabsExample>
+          <TabsExample x={x} value={tab}></TabsExample>
           </>
         }
       />
@@ -178,32 +189,41 @@ function App() {
           </GridItem>
           <GridItem col={2}>
             <Card verticalSpace="l" horizontalSpace="l" style={{height: '87vh', margin: '3vh 3vh 0 0'}}>
-                <ComponentDemo data={repository?.hierarchyFilesJson} f={f}/>
+              { !btnLoad ? 
+                <ComponentDemo data={repository?.hierarchyFilesJson} f={f}/> : <Loader></Loader>
+              }
             </Card>
           </GridItem>
           </Grid>
         }
         { tab == "Результаты" &&
         <Grid gap="xl" cols={3}>
-          <GridItem col={1}>
-            <Card verticalSpace="l" horizontalSpace="l" style={{height: '87vh', margin: '3vh 0 0 0'}}>
-                <Stats
-                  value={result?.percentageLogs ?? 0}
-                  title="Процент логгов"
-                  status="success" />
-                <Pie
-                style={{
-                  width: 300,
-                }}
-                data={data}
-                angleField="value"
-                colorField="type"
-                />
-            </Card>
+          { cardResult &&
+            <GridItem col={1}>
+              { !btnLoad ?
+                <Card verticalSpace="l" horizontalSpace="l" style={{height: '87vh', margin: '3vh 0 0 0'}}>
+                  <Stats
+                    value={result?.percentageLogs ?? 0}
+                    title="Процент логов"
+                    status="success" />
+                  <Pie
+                  style={{
+                    width: 300,
+                  }}
+                  data={data}
+                  angleField="value"
+                  colorField="type"
+                  />
+                  <div>{result?.resultTotal}</div>
+              </Card> : <Loader></Loader>
+              }
           </GridItem>
-          <GridItem col={2}>
+          }
+          <GridItem col={cardResult ? 2 : 3}>
             <Card verticalSpace="l" horizontalSpace="l" style={{height: '87vh', margin: '3vh 3vh 0 0'}}>
-                <TableResult data={repository?.hierarchyFilesJson} f={f}/>
+              { !btnLoad ?
+                <TableResult data={result?.resultJson} f={f}/> : <Loader></Loader>
+              }
             </Card>
           </GridItem>
         </Grid>

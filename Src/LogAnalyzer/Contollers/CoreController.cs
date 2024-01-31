@@ -1,5 +1,5 @@
-﻿using AnalysisCore;
-using AnalysisCore.Contracts;
+﻿using Core;
+using Core.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LogAnalyzer.Contollers
@@ -12,7 +12,7 @@ namespace LogAnalyzer.Contollers
         [HttpPost("Calculation")]
         public async Task<ResultAnalysis> GetCalculation([FromBody] Solution solution)
         {
-            var result = await Core.Calculate(solution);
+            var result = await Core.Core.Calculate(solution);
             result.PercentageLogs = Math.Round(result.PercentageLogs, 2);
 
             return result;
@@ -21,9 +21,9 @@ namespace LogAnalyzer.Contollers
         [HttpPost("Repository")]
         public async Task<RepositoryJson> GetRepository([FromBody] InputData inputData)
         {
-            (var path, var nameFolder) = Core.CreatePath(inputData);
+            (var path, var nameFolder) = Core.Core.CreatePath(inputData);
 
-            var hierarchyFilesJson = await Core.GetRepository(nameFolder);
+            var hierarchyFilesJson = await Core.Core.GetRepository(nameFolder);
             var repository = new RepositoryJson()
             {
                 HierarchyFilesJson = hierarchyFilesJson,
@@ -35,7 +35,7 @@ namespace LogAnalyzer.Contollers
         [HttpPost("BranchesByNameRepo")]
         public List<string> GetBranchesByNameRepo([FromBody] InputData inputData)
         {
-            var result = Core.GetBranchesByNameRepo(inputData.NameRepo);
+            var result = Core.Core.GetBranchesByNameRepo(inputData.NameRepo);
             return result;
         }
     }

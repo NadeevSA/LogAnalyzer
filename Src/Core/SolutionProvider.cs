@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace AnalysisCore.Contracts
+namespace Core.Contracts
 {
     public static class SolutionProvider
     {

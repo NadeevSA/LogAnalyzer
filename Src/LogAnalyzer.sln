@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogAnalyzer", "LogAnalyzer\LogAnalyzer.csproj", "{6A48F030-B9A5-461D-987A-2D36807DF64F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogAnalyzer", "LogAnalyzer\LogAnalyzer.csproj", "{6A48F030-B9A5-461D-987A-2D36807DF64F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalysisCore", "AnalysisCore\AnalysisCore.csproj", "{D13E11B5-35C0-4DFB-BE17-AABC4EB968F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{D13E11B5-35C0-4DFB-BE17-AABC4EB968F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Git", "Git\Git.csproj", "{5CDC8643-9B4B-465F-8B1B-0A4083344BF1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{D13E11B5-35C0-4DFB-BE17-AABC4EB968F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D13E11B5-35C0-4DFB-BE17-AABC4EB968F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D13E11B5-35C0-4DFB-BE17-AABC4EB968F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CDC8643-9B4B-465F-8B1B-0A4083344BF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CDC8643-9B4B-465F-8B1B-0A4083344BF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CDC8643-9B4B-465F-8B1B-0A4083344BF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CDC8643-9B4B-465F-8B1B-0A4083344BF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

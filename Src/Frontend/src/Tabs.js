@@ -18,12 +18,10 @@ const getItemLabel = (item) => item.label;
 const getItemIcon = (item) => item.image;
 
 export const TabsExample = (props) => {
-  const [value, setValue] = useState(items[0]);
   return (
     <Tabs
-      value={value}
+      value={items.find(i => i.label == props.value)}
       onChange={(event) => {
-        setValue(event.value)
         props.x(event.value)
     }}
       items={items}
