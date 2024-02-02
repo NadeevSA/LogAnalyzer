@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 
-namespace Core.Contracts
+namespace Git.Providers
 {
     public static class SolutionProvider
     {

@@ -1,4 +1,4 @@
-﻿namespace Core.Contracts
+﻿namespace Git.Contracts
 {
     public class InputData
     {

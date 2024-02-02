@@ -1,6 +1,8 @@
-﻿using Core;
-using Core.Contracts;
+﻿using Core.Contracts;
+using Core.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace LogAnalyzer.Contollers
 {
@@ -9,33 +11,19 @@ namespace LogAnalyzer.Contollers
     [Produces("application/json")]
     public class CoreController : Controller
     {
+        private readonly ICoreService _coreService;
+
+        public CoreController(ICoreService coreService)
+        {
+            _coreService = coreService ?? throw new ArgumentException(nameof(coreService));
+        }
+
         [HttpPost("Calculation")]
         public async Task<ResultAnalysis> GetCalculation([FromBody] Solution solution)
         {
-            var result = await Core.Core.Calculate(solution);
+            var result = await _coreService.CalculateAsync(solution);
             result.PercentageLogs = Math.Round(result.PercentageLogs, 2);
 
-            return result;
-        }
-
-        [HttpPost("Repository")]
-        public async Task<RepositoryJson> GetRepository([FromBody] InputData inputData)
-        {
-            (var path, var nameFolder) = Core.Core.CreatePath(inputData);
-
-            var hierarchyFilesJson = await Core.Core.GetRepository(nameFolder);
-            var repository = new RepositoryJson()
-            {
-                HierarchyFilesJson = hierarchyFilesJson,
-                Path = path,
-            };
-            return repository;
-        }
-
-        [HttpPost("BranchesByNameRepo")]
-        public List<string> GetBranchesByNameRepo([FromBody] InputData inputData)
-        {
-            var result = Core.Core.GetBranchesByNameRepo(inputData.NameRepo);
             return result;
         }
     }

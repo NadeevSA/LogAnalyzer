@@ -1,4 +1,4 @@
-﻿namespace Core.Contracts
+﻿namespace LogAnalyzer.Contracts
 {
     public class RepositoryJson
     {

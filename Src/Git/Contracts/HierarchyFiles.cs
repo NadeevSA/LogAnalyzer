@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Core.Contracts
+namespace Git.Contracts
 {
     public class HierarchyFiles
     {
@@ -10,7 +10,6 @@ namespace Core.Contracts
         public Guid Id { get; set; }
         public string FileName { set; get; }
         [JsonPropertyName("children")]
-        //[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<HierarchyFiles> Children { set; get; }
 
         [JsonPropertyName("chosen")]
