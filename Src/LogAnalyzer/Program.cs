@@ -1,13 +1,19 @@
-using Git.Services;
-using Git.Services.Interfaces;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
 namespace LogAnalyzer
 {
+    using Git.Services;
+    using Git.Services.Interfaces;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+
+    /// <summary>
+    /// Базовый класс проекта.
+    /// </summary>
     public class Program
     {
+        /// <summary>
+        /// Стартовая точка проекта.
+        /// </summary>
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);

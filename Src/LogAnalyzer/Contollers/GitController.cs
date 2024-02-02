@@ -1,13 +1,16 @@
-﻿using Git.Contracts;
-using Git.Services.Interfaces;
-using LogAnalyzer.Contracts;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace LogAnalyzer.Contollers
+﻿namespace LogAnalyzer.Contollers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Git.Contracts;
+    using Git.Services.Interfaces;
+    using LogAnalyzer.Contracts;
+    using Microsoft.AspNetCore.Mvc;
+
+    /// <summary>
+    /// Контроллер для работы сервисом <see cref="IGitService"/>.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
@@ -16,12 +19,18 @@ namespace LogAnalyzer.Contollers
         private readonly IRepositoryService _repositoryService;
         private readonly IGitService _gitService;
 
-        public GitController (IRepositoryService repositoryService, IGitService gitService) 
+        /// <summary>
+        /// Констуктор для <see cref="GitController"/>.
+        /// </summary>
+        public GitController(IRepositoryService repositoryService, IGitService gitService)
         {
             _repositoryService = repositoryService ?? throw new ArgumentException(nameof(repositoryService));
             _gitService = gitService ?? throw new ArgumentException(nameof(gitService));
         }
 
+        /// <summary>
+        /// Возвращает <see cref="RepositoryJson"/> для вывода иерархии на ЭФ.
+        /// </summary>
         [HttpPost("Repository")]
         public async Task<RepositoryJson> GetRepository([FromBody] InputData inputData)
         {
@@ -36,6 +45,9 @@ namespace LogAnalyzer.Contollers
             return repository;
         }
 
+        /// <summary>
+        /// Возвращает коллекцию веток по названию репозитория.
+        /// </summary>
         [HttpPost("BranchesByNameRepo")]
         public List<string> GetBranchesByNameRepo([FromBody] InputData inputData)
         {

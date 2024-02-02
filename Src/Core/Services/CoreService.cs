@@ -1,16 +1,22 @@
-﻿using Core.Contracts;
-using Core.Services.Interfaces;
-using Microsoft.Build.Locator;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.MSBuild;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Core.Services
+﻿namespace Core.Services
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Core.Contracts;
+    using Core.Services.Interfaces;
+    using Microsoft.Build.Locator;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Microsoft.CodeAnalysis.MSBuild;
+
+    /// <summary>
+    /// Оснвоной сервис.
+    /// </summary>
     public class CoreService : ICoreService
     {
+        /// <summary>
+        /// Анализирует исходный код.
+        /// </summary>
         public async Task<ResultAnalysis> CalculateAsync(Solution sourceSolution)
         {
             var visualStudioInstances = MSBuildLocator.QueryVisualStudioInstances().ToArray();
@@ -75,6 +81,9 @@ namespace Core.Services
             return resultAnalysis;
         }
 
+        /// <summary>
+        /// Определяет есть ли в строке логгер.
+        /// </summary>
         private int IsLogger(string sourceString, string nameLogger)
         {
             var result = sourceString.IndexOf(nameLogger);
