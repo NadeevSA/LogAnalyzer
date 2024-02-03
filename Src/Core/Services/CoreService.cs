@@ -1,16 +1,18 @@
 ﻿namespace Core.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using Core.Contracts;
     using Core.Services.Interfaces;
+    using Core.Services.Modules;
     using Microsoft.Build.Locator;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.MSBuild;
 
     /// <summary>
-    /// Оснвоной сервис.
+    /// Основной сервис.
     /// </summary>
     public class CoreService : ICoreService
     {
@@ -30,64 +32,50 @@
             var solution = await workspace.OpenSolutionAsync(sourceSolution.Path);
             var project = solution.Projects.Single();
             var compilation = await project.GetCompilationAsync();
-            var allIfElse = 0;
-            var countLoggers = 0;
+
+            var resultAnalysis = new ResultAnalysis();
+            var modules = new List<IModule>();
+            var hierarchyResultRoot = new HierarchyResult
+            {
+                Children = new List<HierarchyResult>(),
+            };
+
+            if (sourceSolution.IfElseChecker)
+            {
+                modules.Add(new IfElseModule());
+            }
 
             foreach (var syntaxTree in compilation.SyntaxTrees)
             {
-                var filePath = syntaxTree.FilePath;
-                if (!sourceSolution.CheckFiles.Contains(filePath))
+                if (!sourceSolution.CheckFiles.Contains(syntaxTree.FilePath))
                 {
                     continue;
                 }
 
+                var filePath = syntaxTree.FilePath.Replace(
+                    sourceSolution.NameFolder,
+                    string.Empty);
+
                 var root = await syntaxTree.GetRootAsync();
-                var model = compilation.GetSemanticModel(syntaxTree);
-
-                if (sourceSolution.IfElseChecker)
+                foreach (var module in modules)
                 {
-                    var invocations = root.DescendantNodes().OfType<IfStatementSyntax>();
-
-                    foreach (var invocation in invocations)
-                    {
-                        var expression = invocation;
-                        var loc = expression.GetLocation();
-                        var result = expression.ToFullString();
-                        var x = expression.SyntaxTree.GetLineSpan(expression.Span);
-                        int lineNumber = x.StartLinePosition.Line + 1;
-
-                        await Console.Out.WriteLineAsync("fileName " + filePath);
-                        await Console.Out.WriteLineAsync("lineNumber " + lineNumber);
-                        await Console.Out.WriteLineAsync(result);
-
-                        allIfElse++;
-                        countLoggers += IsLogger(result, sourceSolution.NameLogger);
-                    }
+                    module.Handler(root, filePath, sourceSolution, resultAnalysis, hierarchyResultRoot);
                 }
             }
 
-            var percentageLogs = allIfElse > 0 ?
-                (double)countLoggers / allIfElse * 100 :
-                0;
-
-            await Console.Out.WriteLineAsync($"Result: % log in code = {percentageLogs} " +
-                $"[countLoggers = {countLoggers}, IfElseStatement = {allIfElse}]");
-
-            var resultAnalysis = new ResultAnalysis()
+            foreach (var module in modules)
             {
-                PercentageLogs = percentageLogs,
-            };
+                module.AddResultTotal(resultAnalysis);
+            }
+
+            var percentageLogs = resultAnalysis.IfElseLoggers > 0 ?
+                (double)resultAnalysis.IfElseLoggers / resultAnalysis.AllCountLoggers * 100 : 0;
+
+            resultAnalysis.PercentageLogs = percentageLogs;
+            resultAnalysis.ResultJson = JsonSerializer.Serialize(hierarchyResultRoot.Children);
+            resultAnalysis.ResultTotal = resultAnalysis.ResultTotalStringBuilder.ToString();
 
             return resultAnalysis;
-        }
-
-        /// <summary>
-        /// Определяет есть ли в строке логгер.
-        /// </summary>
-        private int IsLogger(string sourceString, string nameLogger)
-        {
-            var result = sourceString.IndexOf(nameLogger);
-            return result != -1 ? 1 : 0;
         }
     }
 }

@@ -1,5 +1,7 @@
 namespace LogAnalyzer
 {
+    using Core.Services;
+    using Core.Services.Interfaces;
     using Git.Services;
     using Git.Services.Interfaces;
     using Microsoft.AspNetCore.Builder;
@@ -26,8 +28,10 @@ namespace LogAnalyzer
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddControllers();
+
             builder.Services.AddTransient<IGitService, GitService>();
             builder.Services.AddTransient<IRepositoryService, RepositoryService>();
+            builder.Services.AddTransient<ICoreService, CoreService>();
 
             var app = builder.Build();
             app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000"));

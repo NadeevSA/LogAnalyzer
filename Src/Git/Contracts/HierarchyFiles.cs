@@ -8,7 +8,9 @@ namespace Git.Contracts
     {
         [JsonPropertyName("key")]
         public Guid Id { get; set; }
+
         public string FileName { set; get; }
+
         [JsonPropertyName("children")]
         public List<HierarchyFiles> Children { set; get; }
 

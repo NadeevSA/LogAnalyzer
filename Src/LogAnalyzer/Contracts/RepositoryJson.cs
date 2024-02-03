@@ -14,5 +14,7 @@
         /// Путь до файла.
         /// </summary>
         public string Path { get; set; }
+
+        public string NameFolder { get; set; }
     }
 }

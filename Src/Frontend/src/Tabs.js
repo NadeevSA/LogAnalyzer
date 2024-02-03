@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Tabs } from '@consta/uikit/Tabs';
 import { IconSettings } from '@consta/icons/IconSettings';
 import { IconTest } from '@consta/icons/IconTest';
+import { IconRoute } from '@consta/icons/IconRoute';
 
 const items = [
     {
@@ -12,6 +13,10 @@ const items = [
         label: 'Результаты',
         image: IconTest,
     },
+    {
+      label: 'Git',
+      image: IconRoute,
+  },
   ];
 
 const getItemLabel = (item) => item.label;

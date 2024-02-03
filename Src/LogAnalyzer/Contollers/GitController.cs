@@ -41,6 +41,7 @@
             {
                 HierarchyFilesJson = hierarchyFilesJson,
                 Path = path,
+                NameFolder = nameFolder,
             };
             return repository;
         }

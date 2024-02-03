@@ -13,8 +13,6 @@
 
         public List<string> CheckFiles { get; set; } = new List<string>();
 
-        public string NameBranch { get; set; }
-
         public string NameFolder { get; set; }
 
         public bool IfElseChecker { get; set; }

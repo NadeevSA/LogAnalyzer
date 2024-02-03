@@ -111,7 +111,7 @@ namespace Git.Services
                              BranchName = inputData.NameBranch
                          });
 
-            var path = $"{exampleDestinationFolder}{Path.DirectorySeparatorChar}{inputData.NameSln}.sln";
+            var path = $"{exampleDestinationFolder}{Path.DirectorySeparatorChar}{inputData.NameSln}";
             return (path, exampleDestinationFolder);
         }
     }

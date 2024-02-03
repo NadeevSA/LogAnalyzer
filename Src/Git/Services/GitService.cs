@@ -16,7 +16,8 @@ namespace Git.Services
              .Select(elem => elem.CanonicalName
                                  .Replace("refs/heads/", ""));
 
-            var branchName = $"LA-{Guid.NewGuid()}";
+            // TODO: Код для реализации автоматических правок в ветке.
+/*            var branchName = $"LA-{Guid.NewGuid()}";
             using (var repo = new Repository("D:\\Git\\Forest\\Src\\LocalRepos\\-29c5a86f-1a3e-456e-a4d0-c53a7c49ec4a\\.git"))
             {
                 Remote remote = repo.Network.Remotes["origin"];
@@ -55,7 +56,7 @@ namespace Git.Services
 
 
                 repo.Network.Push(branch, options);
-            }
+            }*/
 
             return branches.ToList();
         }

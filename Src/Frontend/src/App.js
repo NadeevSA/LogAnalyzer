@@ -43,7 +43,6 @@ function App() {
       },
       body: JSON.stringify({nameLogger: logger, 
                             checkFiles: checkFiles, 
-                            nameBranch: value.value, 
                             path: repository.path,
                             nameFolder: repository.nameFolder,
                             ifElseChecker: checkIfElse,
@@ -65,7 +64,7 @@ function App() {
   }
 
   function fetchPostBranches() {
-    return fetch('http://localhost:5027/api/Core/BranchesByNameRepo', {
+    return fetch('http://localhost:5027/api/Git/BranchesByNameRepo', {
       method: 'POST',
       headers: {
         "Content-Type": "application/json",
@@ -86,7 +85,7 @@ function App() {
 
   function fetchPostRepository() {
     setBtnLoad(true)
-    return fetch('http://localhost:5027/api/Core/Repository/', {
+    return fetch('http://localhost:5027/api/Git/Repository/', {
       method: 'POST',
       headers: {
         "Content-Type": "application/json",
@@ -200,8 +199,9 @@ function App() {
         <Grid gap="xl" cols={3}>
           { cardResult &&
             <GridItem col={1}>
-              { !btnLoad ?
                 <Card verticalSpace="l" horizontalSpace="l" style={{height: '87vh', margin: '3vh 0 0 0'}}>
+                { !btnLoad ?
+                <div>
                   <Stats
                     value={result?.percentageLogs ?? 0}
                     title="Процент логов"
@@ -214,9 +214,10 @@ function App() {
                   angleField="value"
                   colorField="type"
                   />
-                  <div>{result?.resultTotal}</div>
-              </Card> : <Loader></Loader>
-              }
+                  <div id="resultTotal" >{result?.resultTotal}</div>
+                </div> : <Loader></Loader>
+                }
+              </Card>
           </GridItem>
           }
           <GridItem col={cardResult ? 2 : 3}>
