@@ -40,3 +40,8 @@
 #resultTotal {
   white-space: pre-line;
 }
+
+#btnPush {
+  display: flex;
+  justify-content: center;
+}

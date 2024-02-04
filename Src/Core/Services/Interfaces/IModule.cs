@@ -6,7 +6,14 @@ namespace Core.Services.Interfaces
 {
     public interface IModule
     {
-        void Handler(SyntaxNode syntaxNode, string filePath, Solution solution, ResultAnalysis resultAnalysis, HierarchyResult hierarchyResult);
+        void Handler(
+            SyntaxNode syntaxNode,
+            string filePath,
+            string fullFulePath,
+            Solution solution,
+            ResultAnalysis resultAnalysis,
+            HierarchyResult hierarchyResult,
+            ChangeLoggers changeLoggers);
 
         void AddResultTotal(ResultAnalysis resultAnalysis);
     }

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Core.Contracts;
     using Git.Contracts;
     using Git.Services.Interfaces;
     using LogAnalyzer.Contracts;
@@ -54,6 +55,13 @@
         {
             var result = _gitService.GetBranchesByNameRepo(inputData.NameRepo);
             return result;
+        }
+
+        [HttpPost("PushBranch/{nameNewBranch}/{gitDescCommit}")]
+        public void PushBranch([FromBody] IEnumerable<ChangeLoggers> changeLoggers, string nameNewBranch, string gitDescCommit)
+        {
+            _gitService.PushBranch(changeLoggers, nameNewBranch, gitDescCommit);
+            return;
         }
     }
 }

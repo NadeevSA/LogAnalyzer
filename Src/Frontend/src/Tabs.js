@@ -5,19 +5,19 @@ import { IconTest } from '@consta/icons/IconTest';
 import { IconRoute } from '@consta/icons/IconRoute';
 
 const items = [
-    {
-      label: 'Настройки',
-      image: IconSettings,
-    },
-    {
-        label: 'Результаты',
-        image: IconTest,
-    },
-    {
-      label: 'Git',
-      image: IconRoute,
+  {
+    label: 'Настройки',
+    image: IconSettings,
   },
-  ];
+  {
+      label: 'Результаты',
+      image: IconTest,
+  },
+  {
+    label: 'Git',
+    image: IconRoute,
+  },
+];
 
 const getItemLabel = (item) => item.label;
 const getItemIcon = (item) => item.image;
@@ -25,10 +25,10 @@ const getItemIcon = (item) => item.image;
 export const TabsExample = (props) => {
   return (
     <Tabs
-      value={items.find(i => i.label == props.value)}
+      value={items.find(r => r.label == props.value)}
       onChange={(event) => {
         props.x(event.value)
-    }}
+      }}
       items={items}
       getItemLabel={getItemLabel}
       getItemLeftIcon={getItemIcon}

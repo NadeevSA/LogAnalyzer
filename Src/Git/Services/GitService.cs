@@ -1,4 +1,5 @@
-﻿using Git.Services.Interfaces;
+﻿using Core.Contracts;
+using Git.Services.Interfaces;
 using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
@@ -14,14 +15,17 @@ namespace Git.Services
             var branches = Repository.ListRemoteReferences(repoName)
              .Where(elem => elem.IsLocalBranch)
              .Select(elem => elem.CanonicalName
-                                 .Replace("refs/heads/", ""));
+                                 .Replace("refs/heads/", string.Empty));
 
-            // TODO: Код для реализации автоматических правок в ветке.
-/*            var branchName = $"LA-{Guid.NewGuid()}";
-            using (var repo = new Repository("D:\\Git\\Forest\\Src\\LocalRepos\\-29c5a86f-1a3e-456e-a4d0-c53a7c49ec4a\\.git"))
+            return branches.ToList();
+        }
+
+        public void PushBranch(IEnumerable<ChangeLoggers> changeLoggers, string nameNewBranch, string gitDescCommit)
+        {
+            using (var repo = new Repository($"{changeLoggers.First().PathRepo}{Path.DirectorySeparatorChar}.git"))
             {
-                Remote remote = repo.Network.Remotes["origin"];
-                var branch = repo.CreateBranch(branchName);
+                var remote = repo.Network.Remotes["origin"];
+                var branch = repo.CreateBranch(nameNewBranch);
 
                 string gitUser = "nadeevSA", gitToken = "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";
 
@@ -32,33 +36,31 @@ namespace Git.Services
 
                 var options1 = new CommitOptions
                 {
-                    AllowEmptyCommit = true,
+                    AllowEmptyCommit = false,
                 };
 
-                repo.Branches.Update(branch,
-                        b => b.Remote = remote.Name,
-                        b => b.UpstreamBranch = branch.CanonicalName);
+                repo.Branches.Update(
+                    branch,
+                    b => b.Remote = remote.Name,
+                    b => b.UpstreamBranch = branch.CanonicalName);
 
-                Commands.Checkout(repo, branchName);
+                Commands.Checkout(repo, nameNewBranch);
 
-                var oldText = "_logger.Info($\"Get {string.Join(',', result)} through EF.\");";
-                var newText = "_logger.Trace($\"Get {string.Join(',', result)} through EF.\");";
-                var pathFile = "D:\\Git\\Forest\\Src\\LocalRepos\\-29c5a86f-1a3e-456e-a4d0-c53a7c49ec4a\\Services\\UserService.cs";
-                string text = File.ReadAllText(pathFile);
-                text = text.Replace(oldText, newText);
-                File.WriteAllText(pathFile, text);
+                foreach (var changelogger in changeLoggers)
+                {
+                    string text = File.ReadAllText(changelogger.FullFilePath);
+                    text = text.Replace(changelogger.OldCode, changelogger.NewCode);
+                    File.WriteAllText(changelogger.FullFilePath, text);
+                }
 
                 Commands.Stage(repo, "*");
-                repo.Commit("Create test commit...",
+                repo.Commit(
+                    gitDescCommit ?? string.Empty,
                     new Signature(gitUser, "nadeevSA@mail.ru", DateTimeOffset.Now),
-                    new Signature(gitUser, "nadeevSA@mail.ru", DateTimeOffset.Now)
-                    );
-
+                    new Signature(gitUser, "nadeevSA@mail.ru", DateTimeOffset.Now));
 
                 repo.Network.Push(branch, options);
-            }*/
-
-            return branches.ToList();
+            }
         }
     }
 }

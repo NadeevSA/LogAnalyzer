@@ -9,7 +9,10 @@
     using Core.Services.Interfaces;
     using Core.Services.Modules;
     using Microsoft.Build.Locator;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.FindSymbols;
     using Microsoft.CodeAnalysis.MSBuild;
+    using Solution = Contracts.Solution;
 
     /// <summary>
     /// Основной сервис.
@@ -39,6 +42,10 @@
             {
                 Children = new List<HierarchyResult>(),
             };
+            var changeLoggersRoot = new ChangeLoggers
+            {
+                Children = new List<ChangeLoggers>(),
+            };
 
             if (sourceSolution.IfElseChecker)
             {
@@ -59,7 +66,7 @@
                 var root = await syntaxTree.GetRootAsync();
                 foreach (var module in modules)
                 {
-                    module.Handler(root, filePath, sourceSolution, resultAnalysis, hierarchyResultRoot);
+                    module.Handler(root, filePath, syntaxTree.FilePath, sourceSolution, resultAnalysis, hierarchyResultRoot, changeLoggersRoot);
                 }
             }
 
@@ -73,6 +80,7 @@
 
             resultAnalysis.PercentageLogs = percentageLogs;
             resultAnalysis.ResultJson = JsonSerializer.Serialize(hierarchyResultRoot.Children);
+            resultAnalysis.ChangeLoggersJson = JsonSerializer.Serialize(changeLoggersRoot.Children);
             resultAnalysis.ResultTotal = resultAnalysis.ResultTotalStringBuilder.ToString();
 
             return resultAnalysis;

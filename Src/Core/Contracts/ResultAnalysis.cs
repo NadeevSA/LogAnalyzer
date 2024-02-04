@@ -16,5 +16,7 @@ namespace Core.Contracts
         public string ResultTotal { get; set; }
 
         public string ResultJson { get; set; }
+
+        public string ChangeLoggersJson { get; set; }
     }
 }

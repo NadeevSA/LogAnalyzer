@@ -11,16 +11,16 @@ const columns = [
     dataIndex: 'LineNumber',
   },
   {
-    title: 'Код',
-    dataIndex: 'Result',
+    title: 'Старый код',
+    dataIndex: 'OldCode',
   },
   {
-    title: 'Результат',
-    dataIndex: 'ResultText',
+    title: 'Новый код',
+    dataIndex: 'NewCode',
   }
 ];
 
-export const TableResult = (props) => {
+export const TableGitResult = (props) => {
   const [checkStrictly, setCeckStrictly] = useState(false);
   const [json, setJson] = useState([]);
   
