@@ -79,6 +79,9 @@ dotnet_diagnostic.ASP0014.severity = none
 # SA1633: File should have header
 dotnet_diagnostic.SA1633.severity = none
 
+# SA1200: Using directives should be placed correctly
+dotnet_diagnostic.SA1200.severity = silent
+
 [*.vb]
 #### Стили именования ####
 

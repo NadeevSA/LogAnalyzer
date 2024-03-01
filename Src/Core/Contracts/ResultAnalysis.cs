@@ -18,5 +18,7 @@ namespace Core.Contracts
         public string ResultJson { get; set; }
 
         public string ChangeLoggersJson { get; set; }
+
+        public double TimeWork { get; set; }
     }
 }

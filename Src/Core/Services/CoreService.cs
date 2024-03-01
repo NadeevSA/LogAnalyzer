@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
@@ -24,6 +26,9 @@
         /// </summary>
         public async Task<ResultAnalysis> CalculateAsync(Solution sourceSolution)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var visualStudioInstances = MSBuildLocator.QueryVisualStudioInstances().ToArray();
             var instance = visualStudioInstances[0];
             if (MSBuildLocator.CanRegister)
@@ -33,8 +38,6 @@
 
             var workspace = MSBuildWorkspace.Create();
             var solution = await workspace.OpenSolutionAsync(sourceSolution.Path);
-            var project = solution.Projects.Single();
-            var compilation = await project.GetCompilationAsync();
 
             var resultAnalysis = new ResultAnalysis();
             var modules = new List<IModule>();
@@ -49,31 +52,38 @@
 
             if (sourceSolution.IfElseChecker)
             {
-                modules.Add(new IfElseModule());
+                modules.Add(new MethodDeclarationModule());
             }
 
-            foreach (var syntaxTree in compilation.SyntaxTrees)
+            foreach (var project in solution.Projects)
             {
-                if (!sourceSolution.CheckFiles.Contains(syntaxTree.FilePath))
+                var compilation = await project.GetCompilationAsync();
+                foreach (var syntaxTree in compilation.SyntaxTrees)
                 {
-                    continue;
+                    if (!sourceSolution.CheckFiles.Contains(syntaxTree.FilePath))
+                    {
+                        continue;
+                    }
+
+                    var filePath = syntaxTree.FilePath.Replace(
+                        sourceSolution.NameFolder,
+                        string.Empty);
+                    var fileName = syntaxTree.FilePath.Split(Path.DirectorySeparatorChar).Last();
+
+                    var root = await syntaxTree.GetRootAsync();
+                    foreach (var module in modules)
+                    {
+                        module.Handler(root, fileName, filePath, sourceSolution, resultAnalysis, hierarchyResultRoot, changeLoggersRoot);
+                    }
                 }
 
-                var filePath = syntaxTree.FilePath.Replace(
-                    sourceSolution.NameFolder,
-                    string.Empty);
-
-                var root = await syntaxTree.GetRootAsync();
                 foreach (var module in modules)
                 {
-                    module.Handler(root, filePath, syntaxTree.FilePath, sourceSolution, resultAnalysis, hierarchyResultRoot, changeLoggersRoot);
+                    module.AddResultTotal(resultAnalysis);
                 }
             }
 
-            foreach (var module in modules)
-            {
-                module.AddResultTotal(resultAnalysis);
-            }
+            stopwatch.Stop();
 
             var percentageLogs = resultAnalysis.IfElseLoggers > 0 ?
                 (double)resultAnalysis.IfElseLoggers / resultAnalysis.AllCountLoggers * 100 : 0;
@@ -82,6 +92,7 @@
             resultAnalysis.ResultJson = JsonSerializer.Serialize(hierarchyResultRoot.Children);
             resultAnalysis.ChangeLoggersJson = JsonSerializer.Serialize(changeLoggersRoot.Children);
             resultAnalysis.ResultTotal = resultAnalysis.ResultTotalStringBuilder.ToString();
+            resultAnalysis.TimeWork = (double)stopwatch.ElapsedMilliseconds / 1000;
 
             return resultAnalysis;
         }

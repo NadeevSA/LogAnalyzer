@@ -4,14 +4,24 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.FindSymbols;
+using Microsoft.CodeAnalysis.VisualBasic;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using ArgumentSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.ArgumentSyntax;
+using ExpressionStatementSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionStatementSyntax;
+using InterpolatedStringContentSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.InterpolatedStringContentSyntax;
 using Solution = Core.Contracts.Solution;
+using SyntaxFactory = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using SyntaxKind = Microsoft.CodeAnalysis.CSharp.SyntaxKind;
 
 namespace Core.Services.Modules
 {
@@ -28,15 +38,54 @@ namespace Core.Services.Modules
             HierarchyResult hierarchyResultRoot,
             ChangeLoggers changeLoggersRoot)
         {
-            var invocations = syntaxNode.DescendantNodes().OfType<IfStatementSyntax>();
+            var methodDeclarations = syntaxNode.DescendantNodes().OfType<MethodDeclarationSyntax>();
             var x1 = syntaxNode.DescendantNodes(n => n.IsKind(SyntaxKind.IfStatement)).ToList();
             var allIfElse = 0;
             var hierarchyResultList = new List<HierarchyResult>();
+            var changeLoggerList = new ChangeLoggers
+            {
+                FilePath = filePath,
+            };
 
-            foreach (var invocation in invocations)
+            foreach (var invocation in methodDeclarations)
             {
                 var expression = invocation;
                 var result = expression.ToFullString();
+/*                //MethodDeclarationSyntax
+                var nameMethod = expression.Identifier.Text;
+                //var ifStatement = expression.Body?.DescendantNodes().OfType<IfStatementSyntax>().FirstOrDefault();
+                var expressionStatement = expression.Body?
+                    .DescendantNodes()
+                    .OfType<Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionStatementSyntax>()
+                    .FirstOrDefault();
+                var invocationExpression = expressionStatement?
+                    .DescendantNodes()
+                    .OfType<Microsoft.CodeAnalysis.CSharp.Syntax.InvocationExpressionSyntax>()
+                    .FirstOrDefault();
+                var name = invocationExpression?.ToFullString();*/
+
+/*                if (name != null && name.Contains(solution.NameLogger))
+                {
+                    var x5 = SyntaxFactory.Argument(
+                                SyntaxFactory.InterpolatedStringExpression(
+                                    SyntaxFactory.Token(SyntaxKind.InterpolatedStringStartToken))
+                                .WithContents(
+                                    SyntaxFactory.SingletonList<InterpolatedStringContentSyntax>(
+                                        SyntaxFactory.InterpolatedStringText()
+                                        .WithTextToken(
+                                            SyntaxFactory.Token(
+                                                SyntaxFactory.TriviaList(),
+                                                SyntaxKind.InterpolatedStringTextToken,
+                                                $"{nameMethod}",
+                                                $"{nameMethod}",
+                                                SyntaxFactory.TriviaList())))));
+
+
+                    invocationExpression = invocationExpression.AddArgumentListArguments(x5);
+                    var newName = invocationExpression?.ToFullString();
+                    ;
+                }*/
+
                 var x = expression.SyntaxTree.GetLineSpan(expression.Span);
                 int lineNumber = x.StartLinePosition.Line + 1;
 
@@ -67,7 +116,12 @@ namespace Core.Services.Modules
                             OldCode = message,
                             PathRepo = solution.NameFolder,
                         };
-                        changeLoggersRoot.Children.Add(changeLogger);
+                        if (changeLoggerList.Children == null)
+                        {
+                            changeLoggerList.Children = new List<ChangeLoggers>();
+                        }
+
+                        changeLoggerList.Children.Add(changeLogger);
                     }
                 }
             }
@@ -83,6 +137,10 @@ namespace Core.Services.Modules
             }
 
             resultAnalysis.AllCountLoggers += allIfElse;
+            if (changeLoggerList.Children != null)
+            {
+                changeLoggersRoot.Children.Add(changeLoggerList);
+            }
         }
 
         public void AddResultTotal(ResultAnalysis resultAnalysis)

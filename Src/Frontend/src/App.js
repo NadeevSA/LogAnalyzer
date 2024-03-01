@@ -234,6 +234,8 @@ function App() {
                   colorField="type"
                   />
                   <div id="resultTotal" >{result?.resultTotal}</div>
+                  <div>Общее количество: {result?.allCountLoggers}</div>
+                  <div>Время работы: {result?.timeWork} сек.</div>
                 </div> : <Loader></Loader>
                 }
               </Card>

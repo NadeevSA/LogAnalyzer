@@ -1,6 +1,7 @@
 ﻿using Core.Contracts;
 using Git.Services.Interfaces;
 using LibGit2Sharp;
+using LibGit2Sharp.Handlers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +13,14 @@ namespace Git.Services
     {
         public List<string> GetBranchesByNameRepo(string repoName)
         {
-            var branches = Repository.ListRemoteReferences(repoName)
+            CredentialsHandler handler = (url, usernameFromUrl, types) =>
+            {
+                return new UsernamePasswordCredentials()
+                {
+                    Username = "Nadeev.SA",
+                };
+            };
+            var branches = Repository.ListRemoteReferences(repoName, handler)
              .Where(elem => elem.IsLocalBranch)
              .Select(elem => elem.CanonicalName
                                  .Replace("refs/heads/", string.Empty));
@@ -27,7 +35,7 @@ namespace Git.Services
                 var remote = repo.Network.Remotes["origin"];
                 var branch = repo.CreateBranch(nameNewBranch);
 
-                string gitUser = "nadeevSA", gitToken = "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";
+                string gitUser = "NadeevSA", gitToken = "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";
 
                 var options = new PushOptions
                 {

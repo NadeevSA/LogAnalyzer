@@ -81,8 +81,10 @@ namespace Git.Services
 
         public (string, string) CreatePath(InputData inputData)
         {
-            var pathSolution = SolutionProvider.TryGetSolutionDirectoryInfo();
-            var pathLocalRepos = $"{pathSolution}{Path.DirectorySeparatorChar}LocalRepos";
+            var pathSln = "D:\\Work\\uberizationpurchases";
+            //var pathSolution = SolutionProvider.TryGetSolutionDirectoryInfo(pathSln);
+            var pathSolution = "D:\\Work\\uberizationpurchases\\src\\GpnDs.UBER.sln";
+            var pathLocalRepos = $"{pathSolution}";
 
             if (Directory.Exists(pathLocalRepos))
             {
@@ -104,15 +106,15 @@ namespace Git.Services
                 $"LocalRepos{Path.DirectorySeparatorChar}" +
                 $"{inputData.NameBranch}-{Guid.NewGuid()}";
 
-            Repository.Clone(inputData.NameRepo,
+/*            Repository.Clone(inputData.NameRepo,
                          exampleDestinationFolder,
                          new CloneOptions()
                          {
                              BranchName = inputData.NameBranch
-                         });
+                         });*/
 
             var path = $"{exampleDestinationFolder}{Path.DirectorySeparatorChar}{inputData.NameSln}";
-            return (path, exampleDestinationFolder);
+            return (pathSolution, "D:\\Work\\uberizationpurchases\\src");
         }
     }
 }
