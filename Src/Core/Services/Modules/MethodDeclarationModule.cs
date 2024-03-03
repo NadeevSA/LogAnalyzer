@@ -34,7 +34,8 @@ namespace Core.Services.Modules
             Contracts.Solution solution,
             ResultAnalysis resultAnalysis,
             HierarchyResult hierarchyResultRoot,
-            ChangeLoggers changeClassNameRoot)
+            ChangeLoggers changeClassNameRoot,
+            List<ChangeLog> changeLogs)
         {
             var methodDeclarations = syntaxNode.DescendantNodes().OfType<MethodDeclarationSyntax>();
             var classDeclarationSyntax = syntaxNode.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
@@ -131,7 +132,8 @@ namespace Core.Services.Modules
                                             OldCode = string.Empty,
                                             PathRepo = solution.NameFolder,
                                         };
-                                        var x8 = UpdateString(x7.ToString());
+                                        (var x8, bool b) = UpdateString(x7.ToString());
+
                                         if (changeClassNameRoot.Children.Select(c => c.FilePath).ToList().Contains(x8) == true)
                                         {
                                             var x123 = changeClassNameRoot.Children.Where(c => c.FilePath == x8).First();
@@ -143,7 +145,7 @@ namespace Core.Services.Modules
                                             var changeLogger1 = new ChangeLoggers
                                             {
                                                 FilePath = x8,
-                                                FullFilePath = string.Empty,
+                                                FullFilePath = fullFilePath,
                                                 NewCode = string.Empty,
                                                 OldCode = string.Empty,
                                                 PathRepo = solution.NameFolder,
@@ -152,15 +154,31 @@ namespace Core.Services.Modules
                                             changeLogger1.Children = new List<ChangeLoggers> { changeLogger };
                                             changeLogger1.CountChange = 1;
                                         }
-                                        var argument = AddStringArgument($"{{nameof({x7})}}-{x7}", span);
+
+                                        ArgumentSyntax argument = null;
+                                        if (b == false)
+                                        {
+                                            argument = AddStringArgument($"{x8}-{x7}", span);
+                                        }
+                                        else
+                                        {
+                                            argument = AddStringArgument($"{{nameof({x7})}}-{x7}", span);
+                                        }
                                         argList = argList.AddArguments(argument);
                                     }
                                 }
                             }
 
                             curInvocationExpression = curInvocationExpression.ReplaceNode(curInvocationExpression.ArgumentList, argList);
-
                             var newCode = curInvocationExpression?.ToFullString();
+
+                            var changeLog = new ChangeLog
+                            {
+                                FullFilePath = fullFilePath,
+                                NewCode = newCode,
+                                OldCode = name,
+                            };
+                            changeLogs.Add(changeLog);
 
                             logs++;
                             numberLineLogs.Add(lineNumber);
@@ -186,13 +204,6 @@ namespace Core.Services.Modules
             }
 
             resultAnalysis.AllCountLoggers += logs;
-
-            //GC.Collect();
-            //GC.WaitForPendingFinalizers();
-            /*            if (changeLoggerList.Children != null)
-                        {
-                            changeLoggersRoot.Children.Add(changeLoggers);
-                        }*/
         }
 
         private ArgumentSyntax AddStringArgument(string argument, int lenWhiteSpace, bool first = false)
@@ -219,10 +230,10 @@ namespace Core.Services.Modules
             return argumentSyntax;
         }
 
-        private string UpdateString(string value)
+        private (string, bool) UpdateString(string value)
         {
-            var result = value.Substring(1, value.Length - 2);
-            result = result.ToLower();
+            value = value.Substring(1, value.Length - 2);
+            var result = value.ToLower();
             result = Replace(result, "role", "role");
             result = Replace(result, "request", "request");
             result = Replace(result, "response", "response");
@@ -242,7 +253,7 @@ namespace Core.Services.Modules
                 result = "exception";
             }
 
-            return result;
+            return (result, result == value.ToLower());
         }
 
         private string Replace(string value, string replacement1, string replacement2)

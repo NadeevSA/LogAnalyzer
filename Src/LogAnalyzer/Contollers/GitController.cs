@@ -46,22 +46,5 @@
             };
             return repository;
         }
-
-        /// <summary>
-        /// Возвращает коллекцию веток по названию репозитория.
-        /// </summary>
-        [HttpPost("BranchesByNameRepo")]
-        public List<string> GetBranchesByNameRepo([FromBody] InputData inputData)
-        {
-            var result = _gitService.GetBranchesByNameRepo(inputData.NameRepo);
-            return result;
-        }
-
-        [HttpPost("PushBranch/{nameNewBranch}/{gitDescCommit}")]
-        public void PushBranch([FromBody] IEnumerable<ChangeLoggers> changeLoggers, string nameNewBranch, string gitDescCommit)
-        {
-            _gitService.PushBranch(changeLoggers, nameNewBranch, gitDescCommit);
-            return;
-        }
     }
 }

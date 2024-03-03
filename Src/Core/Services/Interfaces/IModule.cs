@@ -1,5 +1,6 @@
 ﻿using Core.Contracts;
 using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
 using Solution = Core.Contracts.Solution;
 
 namespace Core.Services.Interfaces
@@ -13,7 +14,8 @@ namespace Core.Services.Interfaces
             Solution solution,
             ResultAnalysis resultAnalysis,
             HierarchyResult hierarchyResult,
-            ChangeLoggers changeLoggers);
+            ChangeLoggers changeLoggers,
+            List<ChangeLog> changeLogs);
 
         void AddResultTotal(ResultAnalysis resultAnalysis);
     }

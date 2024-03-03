@@ -36,7 +36,8 @@ namespace Core.Services.Modules
             Solution solution,
             ResultAnalysis resultAnalysis,
             HierarchyResult hierarchyResultRoot,
-            ChangeLoggers changeLoggersRoot)
+            ChangeLoggers changeLoggersRoot,
+            List<ChangeLog> changeLogs)
         {
             var methodDeclarations = syntaxNode.DescendantNodes().OfType<MethodDeclarationSyntax>();
             var x1 = syntaxNode.DescendantNodes(n => n.IsKind(SyntaxKind.IfStatement)).ToList();

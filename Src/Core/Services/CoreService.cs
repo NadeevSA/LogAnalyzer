@@ -56,6 +56,8 @@
             };
             changEntityIdRoot.Children.Add(changeEntityIdChilder);
 
+            var changeLogs = new List<ChangeLog>();
+
             if (sourceSolution.IfElseChecker)
             {
                 modules.Add(new MethodDeclarationModule());
@@ -79,7 +81,7 @@
                     var root = await syntaxTree.GetRootAsync();
                     foreach (var module in modules)
                     {
-                        module.Handler(root, fileName, syntaxTree.FilePath, sourceSolution, resultAnalysis, hierarchyResultRoot, changeEntityIdChilder);
+                        module.Handler(root, fileName, syntaxTree.FilePath, sourceSolution, resultAnalysis, hierarchyResultRoot, changeEntityIdChilder, changeLogs);
                     }
                 }
 
@@ -106,6 +108,13 @@
             resultAnalysis.ChangeLoggersJson = JsonSerializer.Serialize(changEntityIdRoot.Children);
             resultAnalysis.ResultTotal = resultAnalysis.ResultTotalStringBuilder.ToString();
             resultAnalysis.TimeWork = (double)stopwatch.ElapsedMilliseconds / 1000;
+
+            foreach (var changelogger in changeLogs)
+            {
+                string text = File.ReadAllText(changelogger.FullFilePath);
+                text = text.Replace(changelogger.OldCode, changelogger.NewCode);
+                File.WriteAllText(changelogger.FullFilePath, text);
+            }
 
             GC.Collect();
             GC.WaitForPendingFinalizers();

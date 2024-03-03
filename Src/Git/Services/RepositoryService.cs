@@ -81,39 +81,8 @@ namespace Git.Services
 
         public (string, string) CreatePath(InputData inputData)
         {
-            var pathSln = "D:\\Work\\uberizationpurchases";
-            //var pathSolution = SolutionProvider.TryGetSolutionDirectoryInfo(pathSln);
-            var pathSolution = "D:\\Work\\uberizationpurchases\\src\\GpnDs.UBER.sln";
-            var pathLocalRepos = $"{pathSolution}";
+            var pathSolution = $"D:\\Work\\uberizationpurchases\\src\\{inputData.NameSln}";
 
-            if (Directory.Exists(pathLocalRepos))
-            {
-                var directory = new DirectoryInfo(pathLocalRepos)
-                { Attributes = FileAttributes.Normal };
-
-                foreach (var info in directory.GetFileSystemInfos("*", SearchOption.AllDirectories))
-                {
-                    info.Attributes = FileAttributes.Normal;
-                }
-
-                directory.Delete(true);
-            }
-
-            //var exampleRepositoryUrl = "https://github.com/NadeevSA/TestForDiplom.git";
-
-            var exampleDestinationFolder =
-                $"{pathSolution}{Path.DirectorySeparatorChar}" +
-                $"LocalRepos{Path.DirectorySeparatorChar}" +
-                $"{inputData.NameBranch}-{Guid.NewGuid()}";
-
-/*            Repository.Clone(inputData.NameRepo,
-                         exampleDestinationFolder,
-                         new CloneOptions()
-                         {
-                             BranchName = inputData.NameBranch
-                         });*/
-
-            var path = $"{exampleDestinationFolder}{Path.DirectorySeparatorChar}{inputData.NameSln}";
             return (pathSolution, "D:\\Work\\uberizationpurchases\\src");
         }
     }
