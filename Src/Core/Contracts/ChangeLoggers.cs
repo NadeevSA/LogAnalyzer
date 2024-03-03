@@ -26,5 +26,7 @@ namespace Core.Contracts
         public string NewCode { get; set; } = string.Empty;
 
         public string PathRepo { get; set; } = string.Empty;
+
+        public int CountChange { get; set; } = 0;
     }
 }

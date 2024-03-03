@@ -45,10 +45,16 @@
             {
                 Children = new List<HierarchyResult>(),
             };
-            var changeLoggersRoot = new ChangeLoggers
+            var changEntityIdRoot = new ChangeLoggers
             {
                 Children = new List<ChangeLoggers>(),
             };
+            var changeEntityIdChilder = new ChangeLoggers
+            {
+                Children = new List<ChangeLoggers>(),
+                FilePath = "Наименование сущностей",
+            };
+            changEntityIdRoot.Children.Add(changeEntityIdChilder);
 
             if (sourceSolution.IfElseChecker)
             {
@@ -73,7 +79,7 @@
                     var root = await syntaxTree.GetRootAsync();
                     foreach (var module in modules)
                     {
-                        module.Handler(root, fileName, filePath, sourceSolution, resultAnalysis, hierarchyResultRoot, changeLoggersRoot);
+                        module.Handler(root, fileName, syntaxTree.FilePath, sourceSolution, resultAnalysis, hierarchyResultRoot, changeEntityIdChilder);
                     }
                 }
 
@@ -85,14 +91,24 @@
 
             stopwatch.Stop();
 
+            changeEntityIdChilder.FilePath = $"{changeEntityIdChilder.FilePath} ({changeEntityIdChilder.Children.Count})";
+            foreach (var child in changeEntityIdChilder.Children)
+            {
+                child.FilePath = $"{child.FilePath} ({child.CountChange})";
+            }
+            changeEntityIdChilder.Children = changeEntityIdChilder.Children.OrderByDescending(c => c.CountChange).ToList();
+
             var percentageLogs = resultAnalysis.IfElseLoggers > 0 ?
                 (double)resultAnalysis.IfElseLoggers / resultAnalysis.AllCountLoggers * 100 : 0;
 
             resultAnalysis.PercentageLogs = percentageLogs;
             resultAnalysis.ResultJson = JsonSerializer.Serialize(hierarchyResultRoot.Children);
-            resultAnalysis.ChangeLoggersJson = JsonSerializer.Serialize(changeLoggersRoot.Children);
+            resultAnalysis.ChangeLoggersJson = JsonSerializer.Serialize(changEntityIdRoot.Children);
             resultAnalysis.ResultTotal = resultAnalysis.ResultTotalStringBuilder.ToString();
             resultAnalysis.TimeWork = (double)stopwatch.ElapsedMilliseconds / 1000;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
 
             return resultAnalysis;
         }

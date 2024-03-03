@@ -9,14 +9,6 @@ const columns = [
   {
     title: 'Номер строки',
     dataIndex: 'LineNumber',
-  },
-  {
-    title: 'Старый код',
-    dataIndex: 'OldCode',
-  },
-  {
-    title: 'Новый код',
-    dataIndex: 'NewCode',
   }
 ];
 

@@ -30,45 +30,56 @@ namespace Git.Services
 
         public void PushBranch(IEnumerable<ChangeLoggers> changeLoggers, string nameNewBranch, string gitDescCommit)
         {
-            using (var repo = new Repository($"{changeLoggers.First().PathRepo}{Path.DirectorySeparatorChar}.git"))
+            foreach (var changelogger in changeLoggers)
             {
-                var remote = repo.Network.Remotes["origin"];
-                var branch = repo.CreateBranch(nameNewBranch);
-
-                string gitUser = "NadeevSA", gitToken = "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";
-
-                var options = new PushOptions
+                if (changelogger.FullFilePath == null || changelogger.FullFilePath == string.Empty)
                 {
-                    CredentialsProvider = (_url, _user, _cred) => new UsernamePasswordCredentials { Username = gitUser, Password = gitToken },
-                };
-
-                var options1 = new CommitOptions
-                {
-                    AllowEmptyCommit = false,
-                };
-
-                repo.Branches.Update(
-                    branch,
-                    b => b.Remote = remote.Name,
-                    b => b.UpstreamBranch = branch.CanonicalName);
-
-                Commands.Checkout(repo, nameNewBranch);
-
-                foreach (var changelogger in changeLoggers)
-                {
-                    string text = File.ReadAllText(changelogger.FullFilePath);
-                    text = text.Replace(changelogger.OldCode, changelogger.NewCode);
-                    File.WriteAllText(changelogger.FullFilePath, text);
+                    continue;
                 }
-
-                Commands.Stage(repo, "*");
-                repo.Commit(
-                    gitDescCommit ?? string.Empty,
-                    new Signature(gitUser, "nadeevSA@mail.ru", DateTimeOffset.Now),
-                    new Signature(gitUser, "nadeevSA@mail.ru", DateTimeOffset.Now));
-
-                repo.Network.Push(branch, options);
+                string text = File.ReadAllText(changelogger.FullFilePath);
+                text = text.Replace(changelogger.OldCode, changelogger.NewCode);
+                File.WriteAllText(changelogger.FullFilePath, text);
             }
+
+            /*            using (var repo = new Repository($"{changeLoggers.First().PathRepo}{Path.DirectorySeparatorChar}.git"))
+                        {
+                            var remote = repo.Network.Remotes["origin"];
+                            var branch = repo.CreateBranch(nameNewBranch);
+
+                            string gitUser = "NadeevSA", gitToken = "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";
+
+                            var options = new PushOptions
+                            {
+                                CredentialsProvider = (_url, _user, _cred) => new UsernamePasswordCredentials { Username = gitUser, Password = gitToken },
+                            };
+
+                            var options1 = new CommitOptions
+                            {
+                                AllowEmptyCommit = false,
+                            };
+
+                            repo.Branches.Update(
+                                branch,
+                                b => b.Remote = remote.Name,
+                                b => b.UpstreamBranch = branch.CanonicalName);
+
+                            Commands.Checkout(repo, nameNewBranch);
+
+                            foreach (var changelogger in changeLoggers)
+                            {
+                                string text = File.ReadAllText(changelogger.FullFilePath);
+                                text = text.Replace(changelogger.OldCode, changelogger.NewCode);
+                                File.WriteAllText(changelogger.FullFilePath, text);
+                            }
+
+                            Commands.Stage(repo, "*");
+                            repo.Commit(
+                                gitDescCommit ?? string.Empty,
+                                new Signature(gitUser, "nadeevSA@mail.ru", DateTimeOffset.Now),
+                                new Signature(gitUser, "nadeevSA@mail.ru", DateTimeOffset.Now));
+
+                            repo.Network.Push(branch, options);
+                        }*/
         }
     }
 }
