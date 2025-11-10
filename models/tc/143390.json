@@ -1,0 +1,15 @@
+{
+  "id": "143390",
+  "title": "ППР. Настройки ГЗ",
+  "author": "Мухаметзянов Р.И.",
+  "tags": [
+    "created_by_ai"
+  ],
+  "status": "Draft",
+  "use_case_id": "143390",
+  "levels": [
+    "smoke"
+  ],
+  "precondition": "Тестирование настроек граничных значений для ППР",
+  "actions": []
+}
